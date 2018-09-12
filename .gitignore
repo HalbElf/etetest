@@ -1,6 +1,7 @@
 .project
 .classpath
 .settings/
+dtool.*.*
 target/
 tmp/
 dependency-reduced-pom.xml

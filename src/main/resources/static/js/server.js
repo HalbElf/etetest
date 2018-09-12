@@ -6,7 +6,7 @@ etetestServerApp.controller('ServerController', function($http, $scope, $log, $q
     selected = new Set();
     
     $scope.initList = function() {
-        $http.post(url + contextRoot + '/get-servers').then(function(responseData) {
+        $http.get(url + contextRoot + '/get-servers').then(function(responseData) {
             handleGetServersResponse(responseData);
         }, function(createStatus) {
             handleGetServersResponse(responseData);
