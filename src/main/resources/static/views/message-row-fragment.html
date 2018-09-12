@@ -1,0 +1,6 @@
+<div class="row">
+	<div class="form-group col-md-12 has-error" ng-show="showMessage">
+		<label class="col-md-2 control-label" for="idMessage">{{(message.type == 'error' ? 'Error' : 'Info') + ':'}}</label>
+		<span class="col-md-4 help-block" id="idMessage">{{message.text}}</span>
+	</div>
+</div>

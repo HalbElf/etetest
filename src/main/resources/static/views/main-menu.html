@@ -1,0 +1,17 @@
+<div id="mainMenu">
+	<div class="generic-container">
+		<div class="panel panel-default">
+			<div class="panel-heading" ng-controller="MenuController">
+				<div class="btn-toolbar">
+					<button
+						ng-class="'btn .custom-button-width ' + (button.name == selected ? 'btn-primary' : 'btn-default')"
+						ng-disabled="!isButtonEnabled(button)" ng-repeat='button in buttons' ng-click="select(button.name)">{{button.caption}}</button>
+				</div>
+			</div>
+			<div class="formcontainer">
+				<div ng-view>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,56 @@
+<div ng-controller="ServerController as serverCtrl">
+	<span class="lead">Add Server</span>
+		<div class="formcontainer">
+			<form ng-submit="addServer()" name="addServerForm" class="form-horizontal">
+				<message-row></message-row>
+				<div class="row">
+					<div class="form-group col-md-12">
+						<label class="col-md-2 control-label" for="idAlias">Alias</label>
+						<div class="col-md-4" id="idAlias">
+							<input type="text" name="alias" ng-change="errorMessage = ''" ng-model="alias"
+								class="form-control input-sm"
+								placeholder="server alias" required ng-minlength="3" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-md-12">
+						<label class="col-md-2 control-label" for="idPortNumber">Local Port Number</label>
+						<div class="col-md-4" id="idPortNumber">
+							<input type="number" name="portNumber" ng-change="errorMessage = ''"
+								min="0" max="65535" class="form-control input-sm" ng-model="portNumber"
+								placeholder="local port number to listen on" required ng-minlength="1" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-md-12">
+						<label class="col-md-2 control-label" for="idRemotePortNumber">Remote Port Number</label>
+						<div class="col-md-4" id="idRemotePortNumber">
+							<input type="number" name="remotePortNumber" ng-change="errorMessage = ''"
+								min="0" max="65535" class="form-control input-sm" ng-model="remotePortNumber"
+								placeholder="remote port number to connect to" required ng-minlength="1" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-md-12">
+						<label class="col-md-2 control-label" for="idRemoteHost">Remote Host</label>
+						<div class="col-md-4" id="idRemoteHost">
+							<input type="text" name="remoteHost" ng-change="errorMessage = ''" ng-model="remoteHost"
+								class="form-control input-sm"
+								placeholder="remote host" required />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-md-12">
+						<div class="form-actions floatRight">
+							<input ng-disabled="addServerForm.$invalid" type="submit" value="Add Server"
+								class="btn btn-primary btn-sm">
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+</div>

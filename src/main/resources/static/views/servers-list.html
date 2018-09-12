@@ -1,0 +1,51 @@
+<div ng-controller="ServerController as serverCtrl">
+	<span class="lead">Servers List</span>
+	<div class="formcontainer">
+		<div class="row">
+			<div class="form-group col-md-12" ng-init="initList()">
+				<table class="table table-striped noselect downloadable">
+					<thead class="thead">
+						<tr>
+							<th ng-style="{'width': '30%', 'text-align': 'center'}">Alias</th>
+							<th ng-style="{'width': '10%', 'text-align': 'center'}">Local
+								Port</th>
+							<th ng-style="{'width': '40%', 'text-align': 'center'}">Remote
+								Host</th>
+							<th ng-style="{'width': '10%', 'text-align': 'center'}">Remote
+								Port</th>
+							<th ng-style="{'width': '10%', 'text-align': 'center'}">Select</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="server in servers">
+							<td ng-style="{'width': '30%'}">{{server.alias}}</td>
+							<td ng-style="{'width': '10%'}">{{server.portNumber}}</td>
+							<td ng-style="{'width': '40%'}">{{server.remoteHost}}</td>
+							<td ng-style="{'width': '10%'}">{{server.remotePortNumber}}</td>
+							<td ng-style="{'width': '10%'}"><input type="checkbox" name="selectOne_{{$index}}"
+								ng-model="server.selected" ng-click="updateSelection(server)"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row">
+			<div class="form-group col-sm-3">&nbsp;</div>
+			<div class="form-group col-sm-3">
+				<div class="form-actions floatRight">
+					<input type="button" value="Clean Database" class="btn btn-primary btn-sm" ng-disabled="serversEmpty()">  
+				</div>
+			</div>
+			<div class="form-group col-sm-3">
+				<div class="form-actions floatRight">
+					<input type="button" value="Stop Server(s)" class="btn btn-primary btn-sm" ng-disabled="selectedServersEmpty()">  
+				</div>
+			</div>
+			<div class="form-group col-sm-3">
+				<div class="form-actions floatRight">
+					<input type="button" value="Set Active" class="btn btn-primary btn-sm" ng-disabled="!selectedServersSingle()">  
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
