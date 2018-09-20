@@ -33,12 +33,12 @@
 			<div class="form-group col-sm-3">&nbsp;</div>
 			<div class="form-group col-sm-3">
 				<div class="form-actions floatRight">
-					<input type="button" value="Clean Database" class="btn btn-primary btn-sm" ng-disabled="serversEmpty()">  
+					<input type="button" value="Clean Database" ng-click="clearDatabase()" class="btn btn-primary btn-sm" ng-disabled="serversEmpty()">  
 				</div>
 			</div>
 			<div class="form-group col-sm-3">
 				<div class="form-actions floatRight">
-					<input type="button" value="Stop Server(s)" class="btn btn-primary btn-sm" ng-disabled="selectedServersEmpty()">  
+					<input type="button" value="Stop Server(s)" ng-click="deleteServers()" class="btn btn-primary btn-sm" ng-disabled="selectedServersEmpty()">  
 				</div>
 			</div>
 			<div class="form-group col-sm-3">

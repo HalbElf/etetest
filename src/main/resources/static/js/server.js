@@ -7,17 +7,12 @@ etetestServerApp.controller('ServerController', function($http, $scope, $log, $q
     
     $scope.initList = function() {
         $http.get(url + contextRoot + '/get-servers').then(function(responseData) {
-            handleGetServersResponse(responseData);
+            $scope.servers = responseData.data;
         }, function(createStatus) {
-            handleGetServersResponse(responseData);
         });
     };
 
-    function handleGetServersResponse(responseData) {
-        $scope.servers = responseData.data;
-    }
-    
-    function handleAddServerResponse(createStatus) {
+   function handleAddServerResponse(createStatus) {
         if (createStatus.data.status == 'Success') {
             $scope.message.type = 'info';
         } else {
@@ -44,8 +39,9 @@ etetestServerApp.controller('ServerController', function($http, $scope, $log, $q
         $scope.initList();
     }
     
-    $scope.deleteServer = function(alias) {
-        $http.delete(url + contextRoot + '/delete-server', {'alias' : alias}).then(function() {
+    $scope.deleteServers = function() {
+        var monitors = Array.from(selected);
+        $http.put(url + contextRoot + '/delete-servers', monitors).then(function() {
         }, function() {
         });
         $scope.initList();
@@ -69,5 +65,12 @@ etetestServerApp.controller('ServerController', function($http, $scope, $log, $q
     
     $scope.selectedServersSingle = function() {
         return selected.size == 1;
+    }
+    
+    $scope.clearDatabase = function() {
+        $http.put(url + contextRoot + '/clear-data').then(function() {
+        }, function() {
+        });
+        $scope.initList();
     }
 });

@@ -37,7 +37,7 @@ public class HttpMon {
     private int remotePort;
 	private String remoteHost;
 	private Thread processThread;
-    private List<Thread> activeThreads;
+    private List<RequestHandler> requestHandlers;
     private String name;
     private IRequestResponseLogger logger;
 
@@ -50,7 +50,7 @@ public class HttpMon {
 		httpMon.localPort = localPort;
 		httpMon.remotePort = remotePort;
 		httpMon.remoteHost = remoteHost;
-		httpMon.activeThreads = Lists.newLinkedList();
+		httpMon.requestHandlers = Lists.newLinkedList();
 		httpMon.logger = logger;
 		LOGGER.info(String.format(
 				"running with the following configuration: local port %d, remote host %s, remote port %d",
@@ -165,14 +165,21 @@ public class HttpMon {
                 ProxyProcess responseProcess = new ProxyProcess(clientSocket, serverSocket, ProcessType.Response, this);
                 requestProcess.run();
                 responseProcess.run();
-				clientSocket.close();
-				serverSocket.close();
 				if (logger != null) {
 				    logger.log(name, requestProcess.getData(), responseProcess.getData());
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				return;
+			} finally {
+                try {
+                    clientSocket.close();
+                } catch (IOException e) {
+                }
+                try {
+                    serverSocket.close();
+                } catch (IOException e) {
+                }
 			}
 		}
 	}
@@ -180,8 +187,8 @@ public class HttpMon {
 	public void interrupt() {
 		if (processThread != null && processThread.isAlive()) {
 			processThread.interrupt();
-			for (Thread handlerThread : activeThreads) {
-				handlerThread.interrupt();
+			for (RequestHandler requestHandler : requestHandlers) {
+				requestHandler.interrupt();
 			}
 		}
 	}
@@ -191,13 +198,13 @@ public class HttpMon {
 			public void run() {
 				try (ServerSocket listener = new ServerSocket(localPort)) {
 					while (true) {
+					    // received a client connection
 						Socket serverSocket = listener.accept();
 						LOGGER.log(Level.INFO, String.format("processing new client connection from %s/%s:%d", serverSocket.getInetAddress().getHostName(), serverSocket.getInetAddress().getHostAddress(), serverSocket.getPort()));
-						try (Socket clientSocket = new Socket(remoteHost, remotePort)) {
-							Thread t = new RequestHandler(serverSocket, clientSocket, logger);
-							activeThreads.add(t);
-							t.run();
-						}
+                        Socket clientSocket = new Socket(remoteHost, remotePort);
+                        RequestHandler t = new RequestHandler(serverSocket, clientSocket, logger);
+                        requestHandlers.add(t);
+                        t.run();
 					}
 				} catch (Exception e) {
 					LOGGER.log(Level.SEVERE, "error creating server/processing the incoming request", e);

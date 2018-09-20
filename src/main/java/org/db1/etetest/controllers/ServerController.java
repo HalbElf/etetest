@@ -74,10 +74,13 @@ public class ServerController {
         return serverService.getServers();
     }
 
-    @RequestMapping(value = "/delete-server", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/delete-servers", method = RequestMethod.PUT)
     @ResponseBody
-    public void deleteServer(@RequestParam String alias) {
-        serverService.deleteServer(alias);
+    public Collection<HttpMonitorConfigDTO> deleteServer(@RequestBody HttpMonitorConfigDTO[] monitors) {
+        for (HttpMonitorConfigDTO monitor : monitors) {
+            serverService.deleteServer(monitor.getAlias());
+        }
+        return serverService.getServers();
     }
 
     @RequestMapping(value = "/clear-data", method = RequestMethod.DELETE)
