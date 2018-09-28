@@ -1,12 +1,12 @@
 package org.db1.etetest.bom;
 
-import java.sql.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -27,22 +27,13 @@ public class ProxyServer {
         this.name = name;
     }
 
-    @OneToMany(mappedBy="proxyServer", cascade = CascadeType.ALL)
-	private List<LogRecord> logRecords;
+    @OneToMany(mappedBy = "proxyServer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private List<LogRecord> logRecords = new LinkedList<>();
 	
 	public ProxyServer() {
 	}
-	
-	public LogRecord addLogRecord(String request, String response) {
-	    if (logRecords == null) {
-	        logRecords = new LinkedList<>();
-	    }
-	    LogRecord logRecord = new LogRecord();
-	    logRecord.setProxyServer(this);
-	    logRecord.setRequestData(request);
-	    logRecord.setResponseData(response);
-	    logRecord.setTime(new Date(System.currentTimeMillis()));
-	    logRecords.add(logRecord);
-	    return logRecord;
-	}
+
+    public  List<LogRecord> getLogRecords() {
+        return logRecords;
+    }
 }

@@ -1,5 +1,6 @@
 package org.db1.etetest.services;
 
+import java.sql.Date;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.db1.etetest.bom.LogRecord;
 import org.db1.etetest.bom.ProxyServer;
 import org.db1.etetest.bom.repo.ProxyServerRepository;
 import org.db1.etetest.controllers.HttpMonitorConfigDTO;
@@ -78,12 +80,17 @@ public class ServerService  implements IRequestResponseLogger {
             proxyServer = new ProxyServer();
             proxyServer.setName(alias);
         }
-        proxyServer.addLogRecord(request, response);
+        LogRecord logRecord = new LogRecord();
+        logRecord.setProxyServer(proxyServer);
+        logRecord.setRequestData(request);
+        logRecord.setResponseData(response);
+        logRecord.setTime(new Date(System.currentTimeMillis()));
+        proxyServer.getLogRecords().add(logRecord);
         proxyServerRepository.save(proxyServer);
     }
 
-    @Transactional
-    public boolean deleteServer(String alias) {
+    // stop server, its log records still exist in the database
+    public boolean stopServer(String alias) {
         HttpMon removed = servers.remove(alias);
         if (removed != null) {
             removed.interrupt();
@@ -91,13 +98,19 @@ public class ServerService  implements IRequestResponseLogger {
         }
         return false;
     }
+
+    // stop server and delete its records from the database
+    @Transactional
+    public void deleteServer(String alias) {
+        stopServer(alias);
+        proxyServerRepository.deleteByName(alias);
+    }
     
     @Transactional
     public void clearDatabase() {
         for (String alias : servers.keySet()) {
-            if (deleteServer(alias)) {
-                proxyServerRepository.deleteByName(alias);
-            }
+            stopServer(alias);
         }
+        proxyServerRepository.deleteAll();
     }
 }

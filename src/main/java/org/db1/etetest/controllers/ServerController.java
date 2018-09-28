@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -76,11 +75,10 @@ public class ServerController {
 
     @RequestMapping(value = "/delete-servers", method = RequestMethod.PUT)
     @ResponseBody
-    public Collection<HttpMonitorConfigDTO> deleteServer(@RequestBody HttpMonitorConfigDTO[] monitors) {
+    public void deleteServer(@RequestBody HttpMonitorConfigDTO[] monitors) {
         for (HttpMonitorConfigDTO monitor : monitors) {
-            serverService.deleteServer(monitor.getAlias());
+            serverService.stopServer(monitor.getAlias());
         }
-        return serverService.getServers();
     }
 
     @RequestMapping(value = "/clear-data", method = RequestMethod.DELETE)

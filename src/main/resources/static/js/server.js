@@ -3,11 +3,12 @@ etetestServerApp.controller('ServerController', function($http, $scope, $log, $q
     $scope.message = {};
     $scope.showMessage = false;
     $scope.servers = [];
-    selected = new Set();
+    $scope.selected = new Set();
     
     $scope.initList = function() {
         $http.get(url + contextRoot + '/get-servers').then(function(responseData) {
             $scope.servers = responseData.data;
+            $scope.selected.clear();
         }, function(createStatus) {
         });
     };
@@ -21,6 +22,7 @@ etetestServerApp.controller('ServerController', function($http, $scope, $log, $q
         }
         $scope.message.text = createStatus.data.text;
         $scope.showMessage = true;
+        $scope.selected.clear();
     }
 
     $scope.addServer = function() {
@@ -40,11 +42,11 @@ etetestServerApp.controller('ServerController', function($http, $scope, $log, $q
     }
     
     $scope.deleteServers = function() {
-        var monitors = Array.from(selected);
+        var monitors = Array.from($scope.selected);
         $http.put(url + contextRoot + '/delete-servers', monitors).then(function() {
+            $scope.initList();
         }, function() {
         });
-        $scope.initList();
     }
 
     $scope.serversEmpty = function() {
@@ -53,22 +55,23 @@ etetestServerApp.controller('ServerController', function($http, $scope, $log, $q
     
     $scope.updateSelection = function(server) {
         if (server.selected) {
-            selected.add(server);
+            $scope.selected.add(server);
         } else {
-            selected.delete(server);
+            $scope.selected.delete(server);
         }
     }
 
     $scope.selectedServersEmpty = function() {
-        return selected.size == 0;
+        return $scope.selected.size == 0;
     }
     
     $scope.selectedServersSingle = function() {
-        return selected.size == 1;
+        return $scope.selected.size == 1;
     }
     
     $scope.clearDatabase = function() {
         $http.put(url + contextRoot + '/clear-data').then(function() {
+            $scope.selected.clear();
         }, function() {
         });
         $scope.initList();

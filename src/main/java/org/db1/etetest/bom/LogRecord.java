@@ -21,7 +21,7 @@ public class LogRecord {
 	private ProxyServer proxyServer;
     private Date time;
 
-	LogRecord() {
+	public LogRecord() {
 	}
 	
 	public String getRequestData() {

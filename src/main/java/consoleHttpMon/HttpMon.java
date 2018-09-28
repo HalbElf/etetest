@@ -40,7 +40,8 @@ public class HttpMon {
     private List<RequestHandler> requestHandlers;
     private String name;
     private IRequestResponseLogger logger;
-
+    private ServerSocket listener;
+    
 	private HttpMon() {
 	}
 
@@ -166,7 +167,12 @@ public class HttpMon {
                 requestProcess.run();
                 responseProcess.run();
 				if (logger != null) {
-				    logger.log(name, requestProcess.getData(), responseProcess.getData());
+				    try {
+				        logger.log(name, requestProcess.getData(), responseProcess.getData());
+				    } catch (Exception e) {
+				        // catch exceptions in logging separately
+				        e.printStackTrace();
+				    }
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -191,25 +197,42 @@ public class HttpMon {
 				requestHandler.interrupt();
 			}
 		}
+        if (listener != null) {
+            try {
+                listener.close();
+            } catch (IOException e) {
+            }
+        }
 	}
 	public void process() {
 		processThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				try (ServerSocket listener = new ServerSocket(localPort)) {
-					while (true) {
-					    // received a client connection
-						Socket serverSocket = listener.accept();
-						LOGGER.log(Level.INFO, String.format("processing new client connection from %s/%s:%d", serverSocket.getInetAddress().getHostName(), serverSocket.getInetAddress().getHostAddress(), serverSocket.getPort()));
+			    try {
+                    listener = new ServerSocket(localPort);
+                    while (true) {
+                        // received a client connection
+                        Socket serverSocket = listener.accept();
+                        LOGGER.log(Level.INFO,
+                                String.format("processing new client connection from %s/%s:%d",
+                                        serverSocket.getInetAddress().getHostName(),
+                                        serverSocket.getInetAddress().getHostAddress(), serverSocket.getPort()));
                         Socket clientSocket = new Socket(remoteHost, remotePort);
                         RequestHandler t = new RequestHandler(serverSocket, clientSocket, logger);
                         requestHandlers.add(t);
                         t.run();
-					}
-				} catch (Exception e) {
-					LOGGER.log(Level.SEVERE, "error creating server/processing the incoming request", e);
-					throw new RuntimeException(e);
-				}
+                    }
+                } catch (IOException e) {
+                    System.out.println(e);
+                } finally {
+                    if (listener != null) {
+                        try {
+                            listener.close();
+                        } catch (IOException e) {
+                            // ignore
+                        }
+                    }
+                }
 			}
 		});
 		processThread.start();
